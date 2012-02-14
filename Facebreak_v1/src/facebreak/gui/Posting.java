@@ -10,4 +10,8 @@ public class Posting {
 	public Posting() {
 		
 	}
+	
+	public Posting(String contents) {
+		this.contents = contents;
+	}
 }
