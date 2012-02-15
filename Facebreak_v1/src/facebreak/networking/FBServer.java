@@ -6,22 +6,17 @@ import java.net.Socket;
 import java.util.HashMap;
 
 public class FBServer {
-	private int portnum;
-	private ServerSocket listener;
 	private HashMap<Integer, AuthenticatedUser> connectedUsers;
 	
-	public FBServer() {
-		portnum = 4444;
-		listener = null;
-		connectedUsers = new HashMap<Integer, AuthenticatedUser>();
+	public synchronized void connectToUser(AuthenticatedUser user) {
+		connectedUsers.put(user.getId(), user);
 	}
 	
-	private void authenticateUser(MyUser user) {
-		// if user's credentialsl check out
-		AuthenticatedUser au = new AuthenticatedUser();
-		au.authenticate(user);
+	public synchronized void disconnectToUser(AuthenticatedUser user) {
+		user.logOut();
+		connectedUsers.put(user.getId(), user);
 	}
-
+	
 	public static void main(String args[]) {
 		int port = 4444;
 		ServerSocket server = null;

@@ -9,7 +9,8 @@ public enum Error {
 	NO_USER(4, "This user does not exist."), 
 	PRIVILEGE(5, "This user does not have the privilege."), 
 	PASSWORD(6,	"Incorrect username/password combination."), 
-	MISC_ERROR(10, "Unknown error occurred."); // not sure what this is for?
+	UNKNOWN_REQUEST(7, "Invalid request."),
+	UNKNOWN_ERROR(10, "Unknown error occurred."); // not sure what this is for?
 
 	private final int code;
 	private final String msg;

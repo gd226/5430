@@ -17,6 +17,10 @@ public class Message implements Serializable {
 	private Posting posts[];
 	private Error error;
 	
+	public Message() {
+		user = null;
+	}
+	
 	public Message(MyUser user) {
 		this.user = user;
 	}

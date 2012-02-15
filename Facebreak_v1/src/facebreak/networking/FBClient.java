@@ -5,7 +5,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class FBClient {
+public class FBClient implements Client {
 
 	private Socket mySocket;
 	private int portNum;
@@ -38,29 +38,34 @@ public class FBClient {
 		try {
 			mySocket.close();
 		} catch (IOException e) {
-			return Error.MISC_ERROR;
+			return Error.UNKNOWN_ERROR;
 		}
 		
 		return Error.SUCCESS;
 	}
 	
-	public Error post() {
+	public Error post(MyUser user) {
 		
 		return Error.SUCCESS;
 	}
 
-	public Error view() {
+	public Error view(MyUser user) {
 		
 		return Error.SUCCESS;
 	}
 	
-	public Error delete() {
+	public Error delete(MyUser user) {
 		
 		return Error.SUCCESS;
 	}
 
-	public Error createUser() {
+	public Error createUser(MyUser user) {
 		
+		
+		return Error.SUCCESS;
+	}
+	
+	public Error changePassword(MyUser user) {
 		
 		return Error.SUCCESS;
 	}
