@@ -1,7 +1,7 @@
 package facebreak.networking;
 
 import java.io.Serializable;
-import java.sql.Time;
+import java.util.Date;
 
 import facebreak.gui.Posting;
 
@@ -13,7 +13,7 @@ public class Message implements Serializable {
 	
 	private MyUser user;
 	private MessageType type;
-	private Time timestamp;
+	private Date timestamp;
 	private Posting posts[];
 	private Error error;
 	
@@ -43,10 +43,10 @@ public class Message implements Serializable {
 	public void setErrorMessage(Error error) {
 		this.error = error;
 	}
-	public Time getTimestamp() {
+	public Date getTimestamp() {
 		return timestamp;
 	}
-	public void setTime(Time timestamp) {
+	public void setTime(Date timestamp) {
 		this.timestamp = timestamp;
 	}
 	public Posting[] getMyPost() {

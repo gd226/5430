@@ -49,7 +49,12 @@ public class FBClient implements Client {
 		return Error.SUCCESS;
 	}
 
-	public Error view(MyUser user) {
+	public Error viewPost(MyUser user) {
+		
+		return Error.SUCCESS;
+	}
+	
+	public Error viewProfile(MyUser user) {
 		
 		return Error.SUCCESS;
 	}
