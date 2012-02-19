@@ -51,6 +51,6 @@ public class FBServer {
 	}
 
 	public static void main(String args[]) {
-
+		new FBServer();
 	}
 }

@@ -1,25 +1,35 @@
 package facebreak.networking;
 
+import java.io.Serializable;
 
-public class Posting extends Content {
-	private int pid;	// id for particular post
-	private int uid;	// id for user (owner of post)
-	private int rid; 	// region id
-	private String contents;
+public class Posting implements Serializable {
+	private int owner;	// id for user (owner of post)
 	private RegionAccess region;
+	private String text;
 
 	public enum RegionAccess {
-		PUBLIC, PRIVATE, COVERT;
-	}
-
-	
-	public Posting(int pid, int uid, int rid) {
-		this.pid = pid;
-		this.uid = uid;
-		this.rid = rid;
+		PUBLIC, PRIVATE, COVERT1, COVERT2, COVERT3;
 	}
 	
-	public Posting(String contents) {
-		this.contents = contents;
+	public Posting(int owner, RegionAccess region, String text) {
+		this.owner = owner;
+		this.region = region;
+		this.text = text;
+	}
+	
+	public void setRegion(RegionAccess region) {
+		this.region = region;
+	}
+	
+	public RegionAccess getRegion(RegionAccess region) {
+		return region;
+	}
+	
+	public void setText(String text) {
+		this.text = text;
+	}
+	
+	public String getText(String text) {
+		return text;
 	}
 }

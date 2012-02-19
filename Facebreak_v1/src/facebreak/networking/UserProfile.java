@@ -1,9 +1,9 @@
 package facebreak.networking;
 
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
-
-public class UserProfile extends Content {
+public class UserProfile implements Serializable {
 	private String username;
 	private String fname;
 	private String lname;

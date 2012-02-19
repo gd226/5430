@@ -1,7 +1,5 @@
 package facebreak.networking;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,16 +8,14 @@ import java.net.Socket;
 public class FBClientHandler extends Thread {
 	private Socket client;
 	private AuthenticatedUser user;
-	private FileOutputStream fos;
+//	private FileOutputStream fos;
+//	private FileInputStream fis;
 	private ObjectOutputStream oos;
-	private FileInputStream fis;
 	private ObjectInputStream ois;
 	
 	public FBClientHandler(Socket client) {
 		this.client = client;
-		fos = null;
 		oos = null;
-		fis = null;
 		ois = null;
 	}
 
@@ -29,24 +25,27 @@ public class FBClientHandler extends Thread {
 		Reply reply = new Reply();
 
 		switch (type) {
-		case REQUEST_LOGIN:
+		case LOGIN:
 			processLogin(reply);
 			break;
-		case REQUEST_LOGOUT:
+		case LOGOUT:
 			processLogout(reply);
 			break;
-		case REQUEST_CREATE_USER:
+		case CREATE_USER:
 			processCreateUser(reply);
-		case REQUEST_CHANGE_PWD:
+		case CHANGE_PWD:
 			processChangePassword(reply);
 			break;
-		case REQUEST_VIEW:
+		case VIEW_BOARD:
 			processViewPost(reply);
 			break;
-		case REQUEST_POST:
+		case VIEW_PROFILE:
+			processViewPost(reply);
+			break;
+		case POST:
 			processCreatePost(reply);
 			break;
-		case REQUEST_DELETE:
+		case DELETE_POST:
 			processDeletePost(reply);
 			break;
 		default:

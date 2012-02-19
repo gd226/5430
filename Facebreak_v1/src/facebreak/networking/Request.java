@@ -1,33 +1,32 @@
 package facebreak.networking;
 
-import java.util.Date;
-
 public class Request {
-	private MyUser user;
-	private Date timestamp;
+	private int uid;
+	private long timestamp;
 	private RequestType type;
+	private Content requestDescription;
 	
 	public Request() {
-		user = null;
+		requestDescription = null;
 	}
 	
-	public Request(MyUser user) {
-		this.user = user;
+	public Request(int uid) {
+		this.uid = uid;
 	}
 	
-	public MyUser getUser() {
-		return user;
+	public int getUserId() {
+		return uid;
 	}
 	
-	public void setUser(MyUser user) {
-		this.user = user;
+	public void setUserId(int uid) {
+		this.uid = uid;
 	}
 	
-	public Date getTimestamp() {
+	public long getTimestamp() {
 		return timestamp;
 	}
 	
-	public void setTimestamp(Date timestamp) {
+	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
 	

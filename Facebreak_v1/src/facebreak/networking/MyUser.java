@@ -1,7 +1,9 @@
 package facebreak.networking;
 
-public class MyUser {
-	private int id;
+import java.io.Serializable;
+
+public class MyUser implements Serializable {
+	private int uid;
 	private String name;
 	private String password;
 	private String hashedPassword;
@@ -17,10 +19,10 @@ public class MyUser {
 	}
 	
 	public int getId() {
-		return id;
+		return uid;
 	}
-	public void setId(int id) {
-		this.id = id;
+	public void setId(int uid) {
+		this.uid = uid;
 	}
 	
 	public String getName() {

@@ -40,4 +40,20 @@ public class DummyQuery {
 	public boolean canViewPost(int userid) {
 		return true;
 	}
+	
+	public void editPost(int pid) {
+		
+	}
+	
+	public Object getPost() {
+		return null;
+	}
+	
+	/*
+	 * User with uid requestingUid calls to view
+	 * the 10 most recent posts on boardOwner's board/region.
+	 */
+	public Object[] getBoard(String boardOwner, int requestingUid, Region r) {
+		
+	}
 }
