@@ -9,7 +9,9 @@ public enum Error {
 	NO_USER(4, "This user does not exist."), 
 	PRIVILEGE(5, "This user does not have the privilege."), 
 	PASSWORD(6,	"Incorrect username/password combination."), 
+	PASSWORD_TIMEOU(7, "Too many login attempts."), 
 	UNKNOWN_REQUEST(7, "Invalid request."),
+	LOGIN(8, "Not logged in."),
 	UNKNOWN_ERROR(10, "Unknown error occurred."); // not sure what this is for?
 
 	private final int code;

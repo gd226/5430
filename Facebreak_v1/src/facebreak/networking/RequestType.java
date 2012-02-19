@@ -1,13 +1,11 @@
 package facebreak.networking;
 
-public enum MessageType {
+public enum RequestType {
 	REQUEST_LOGIN,
 	REQUEST_LOGOUT,
 	REQUEST_CREATE_USER,
 	REQUEST_CHANGE_PWD,
 	REQUEST_VIEW,
 	REQUEST_POST,
-	REQUEST_DELETE,
-	REPLY_FROM_SERVER,
-	REPLY_ERROR;
+	REQUEST_DELETE;
 }
