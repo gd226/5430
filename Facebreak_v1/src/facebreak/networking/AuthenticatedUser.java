@@ -30,11 +30,6 @@ public class AuthenticatedUser {
 		isLoggedIn = false;
 	}
 	
-	protected void authenticate(MyUser user) {
-		int uid = 0;
-		id = uid;
-		// if user exists && password matches, then logIn();
-	}
 	protected boolean isLoggedIn() {
 		return isLoggedIn;
 	}

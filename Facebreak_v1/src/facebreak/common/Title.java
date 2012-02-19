@@ -1,8 +1,10 @@
-package facebreak.networking;
+package facebreak.common;
 
 public enum Title {
-	BOSS(0, "Boss"), CAPO(1, "Caporegime"), SOLDIER(2, "Soldier"), ASSOC(3,
-			"Associate");
+	BOSS(0, "Boss"), 
+	CAPO(1, "Caporegime"), 
+	SOLDIER(2, "Soldier"), 
+	ASSOC(3, "Associate");
 
 	private final int rank;
 	private final String title;

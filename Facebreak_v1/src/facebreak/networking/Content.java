@@ -2,14 +2,18 @@ package facebreak.networking;
 
 import java.io.Serializable;
 
+import facebreak.common.Post;
+import facebreak.common.Profile;
+import facebreak.common.User;
+
 /*
  * Wrapper class
  */
 public class Content implements Serializable {
-	private MyUser user;
-	private UserProfile profile;
-	private Posting post;
-	private Posting[] board;
+	private User user;
+	private Profile profile;
+	private Post post;
+	private Post[] board;
 	
 	public Content() {
 		user = null;
@@ -18,36 +22,35 @@ public class Content implements Serializable {
 		board = null;
 	}
 
-	public MyUser getUser() {
+	public User getUser() {
 		return user;
 	}
 
-	public void setUser(MyUser user) {
+	public void setUser(User user) {
 		this.user = user;
 	}
 
-	public UserProfile getProfile() {
+	public Profile getProfile() {
 		return profile;
 	}
 
-	public void setProfile(UserProfile profile) {
+	public void setProfile(Profile profile) {
 		this.profile = profile;
 	}
 
-	public Posting getPost() {
+	public Post getPost() {
 		return post;
 	}
 
-	public void setPost(Posting post) {
+	public void setPost(Post post) {
 		this.post = post;
 	}
 
-	public Posting[] getBoard() {
+	public Post[] getBoard() {
 		return board;
 	}
 
-	public void setBoard(Posting[] board) {
+	public void setBoard(Post[] board) {
 		this.board = board;
 	}
-	
 }

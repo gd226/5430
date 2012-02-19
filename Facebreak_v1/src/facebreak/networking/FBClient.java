@@ -1,8 +1,5 @@
 package facebreak.networking;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,18 +7,20 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import facebreak.common.Profile;
+import facebreak.common.User;
+import facebreak.networking.Request.RequestType;
+
 public class FBClient {
 	private Socket socket;
-	private int port;
 	private InetAddress serverAddr;
-	private MyUser user;
-//	private FileOutputStream fos;
-//	private FileInputStream fis;
+	private User user;
 	private ObjectOutputStream outStream;
 	private ObjectInputStream inStream;
 	
+	private static final int port = 4444;
+	
 	public FBClient() throws UnknownHostException {
-		port = 4444;
 		serverAddr = InetAddress.getLocalHost();
 		user = null;
 		socket = null;
@@ -29,8 +28,7 @@ public class FBClient {
 		inStream = null;
 	}
 
-	public FBClient(InetAddress serverAddr, int port) {
-		this.port = port;
+	public FBClient(InetAddress serverAddr) {
 		this.serverAddr = serverAddr;
 		user = null;
 		socket = null;
@@ -39,23 +37,22 @@ public class FBClient {
 	}
 	
 	public FBClient(String username, String pwd) throws UnknownHostException {
-		port = 4444;
 		serverAddr = InetAddress.getLocalHost();
-		user = new MyUser(username, pwd);
+		user = new User(username, pwd);
 		socket = null;
 		outStream = null;
 		inStream = null;
 	}
 	
-	public void setCurrentUser(MyUser user) {
+	public void setCurrentUser(User user) {
 		this.user = user;
 	}
 
 	public void setCurrentUser(String username, String pwd) {
-		user = new MyUser(username, pwd);
+		user = new User(username, pwd);
 	}
 	
-	public MyUser getCurrentUser() {
+	public User getCurrentUser() {
 		return user;
 	}
 	
@@ -65,9 +62,10 @@ public class FBClient {
 			socket = new Socket(serverAddr, port);
 			
 			// create request object
-			Request loginRequest = new Request(user);
+			Request loginRequest = new Request();
 			loginRequest.setRequestType(RequestType.LOGIN);
 			loginRequest.setTimestamp(System.currentTimeMillis());
+			loginRequest.getDetails().setUser(user);
 			
 			outStream = new ObjectOutputStream(socket.getOutputStream());
 			outStream.writeObject(loginRequest);
@@ -97,18 +95,19 @@ public class FBClient {
 			outStream.writeObject(logoutRequest);
 			try {
 				Reply serverReply = (Reply) inStream.readObject();
+
+				
+				outStream.close();
+				inStream.close();
+				socket.close();
+				
+				return serverReply.getReturnError();
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return Error.UNKNOWN_ERROR;
 			}
-			
-			outStream.close();
-			inStream.close();
-			socket.close();
 		} catch (IOException e) {
 			return Error.UNKNOWN_ERROR;
 		}
-		return Error.SUCCESS;
 	}
 	
 	public Error post() {
@@ -128,7 +127,7 @@ public class FBClient {
 		return Error.SUCCESS;
 	}
 	
-	public Error viewProfile(String username, UserProfile profile) {
+	public Error viewProfile(String username, Profile profile) {
 		if(socket == null)
 			return Error.LOGIN;
 		
@@ -137,7 +136,7 @@ public class FBClient {
 		return Error.SUCCESS;
 	}
 	
-	public Error editProfile(int uid, UserProfile myProfile) {
+	public Error editProfile(int uid, Profile myProfile) {
 		if(socket == null)
 			return Error.LOGIN;
 		

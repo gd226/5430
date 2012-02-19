@@ -1,21 +1,21 @@
-package facebreak.networking;
+package facebreak.common;
 
 import java.io.Serializable;
 
-public class MyUser implements Serializable {
+public class User implements Serializable {
 	private int uid;
 	private String name;
-	private String password;
+	private String pwd;
 	private String hashedPassword;
 	
-	public MyUser() {
+	public User() {
 		this.name = new String();
-		this.password = new String();
+		this.pwd = new String();
 	}
 	
-	public MyUser(String name, String password) {
+	public User(String name, String password) {
 		this.name = new String(name);
-		this.password = new String(password);
+		this.pwd = new String(password);
 	}
 	
 	public int getId() {
@@ -33,9 +33,9 @@ public class MyUser implements Serializable {
 	}
 
 	public String getPassword() {
-		return password;
+		return pwd;
 	}
-	public void setPassword(String password) {
-		this.password = password;
+	public void setPassword(String pwd) {
+		this.pwd = pwd;
 	}
 }

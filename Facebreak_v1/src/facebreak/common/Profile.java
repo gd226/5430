@@ -1,9 +1,9 @@
-package facebreak.networking;
+package facebreak.common;
 
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
-public class UserProfile implements Serializable {
+public class Profile implements Serializable {
 	private String username;
 	private String fname;
 	private String lname;
@@ -11,14 +11,20 @@ public class UserProfile implements Serializable {
 	private Title title;
 	private BufferedImage photo;
 	
-	public UserProfile(String username) {
+	public Profile(String username) {
 		this.username = username;
+		family = null;
+		title = null;
+		photo = null;
 	}
 	
-	public UserProfile(String username, String fname, String lname) {
+	public Profile(String username, String fname, String lname) {
 		this.username = username;
 		this.fname = fname;
 		this.lname = lname;
+		family = null;
+		title = null;
+		photo = null;
 	}
 	
 	public String getUsername() {

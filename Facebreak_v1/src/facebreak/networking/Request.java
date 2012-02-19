@@ -4,14 +4,15 @@ public class Request {
 	private int uid;
 	private long timestamp;
 	private RequestType type;
-	private Content requestDescription;
+	private Content details;
 	
 	public Request() {
-		requestDescription = null;
+		details = new Content();
 	}
 	
 	public Request(int uid) {
 		this.uid = uid;
+		details = new Content();
 	}
 	
 	public int getUserId() {
@@ -36,5 +37,25 @@ public class Request {
 	
 	public void setRequestType(RequestType type) {
 		this.type = type;
+	}
+	
+	public void setDetails(Content details) {
+		this.details = details;
+	}
+	
+	public Content getDetails() {
+		return details;
+	}
+	
+	public enum RequestType {
+		LOGIN,
+		LOGOUT,
+		CREATE_USER,
+		CHANGE_PWD,
+		VIEW_PROFILE,
+		EDIT_PROFILE,
+		VIEW_BOARD,
+		POST,
+		DELETE_POST;
 	}
 }

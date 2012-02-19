@@ -5,15 +5,19 @@ import java.util.Date;
 
 public class Reply implements Serializable {
 	
-	private Date timestamp;
+	private long timestamp;
 	private Error error;
 	private Content contents;
 	
-	public Date getTimestamp() {
+	public Reply() {
+		contents = new Content();
+	}
+	
+	public long getTimestamp() {
 		return timestamp;
 	}
 	
-	public void setTimestamp(Date timestamp) {
+	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
 	
