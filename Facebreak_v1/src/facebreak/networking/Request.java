@@ -6,12 +6,19 @@ public class Request {
 	private RequestType type;
 	private Content details;
 	
-	public Request() {
+	public Request(RequestType type) {
+		this.type = type;
 		details = new Content();
 	}
 	
 	public Request(int uid) {
 		this.uid = uid;
+		details = new Content();
+	}
+
+	public Request(int uid, RequestType type) {
+		this.uid = uid;
+		this.type = type;
 		details = new Content();
 	}
 	

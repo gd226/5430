@@ -1,6 +1,5 @@
 package facebreak.common;
 
-import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 public class Profile implements Serializable {
@@ -9,13 +8,15 @@ public class Profile implements Serializable {
 	private String lname;
 	private String family;
 	private Title title;
-	private BufferedImage photo;
+	private SerializableAvatar avatar;
 	
 	public Profile(String username) {
 		this.username = username;
+		fname = null;
+		lname = null;
 		family = null;
 		title = null;
-		photo = null;
+		avatar = null;
 	}
 	
 	public Profile(String username, String fname, String lname) {
@@ -24,11 +25,15 @@ public class Profile implements Serializable {
 		this.lname = lname;
 		family = null;
 		title = null;
-		photo = null;
+		avatar = null;
 	}
 	
 	public String getUsername() {
 		return username;
+	}
+	
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 	public String getFname() {
@@ -63,11 +68,11 @@ public class Profile implements Serializable {
 		this.title = title;
 	}
 	
-	public BufferedImage getPhoto() {
-		return photo;
+	public SerializableAvatar getAvatar() {
+		return avatar;
 	}
 	
-	public void setPhoto(BufferedImage photo) {
-		this.photo = photo;
+	public void setAvatar(SerializableAvatar avatar) {
+		this.avatar = avatar;
 	}
 }

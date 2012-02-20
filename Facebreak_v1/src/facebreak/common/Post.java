@@ -3,10 +3,12 @@ package facebreak.common;
 import java.io.Serializable;
 
 public class Post implements Serializable {
-	private int owner;			// id for owner of board
+	private int ownerId;			// id for owner of board
+	private String ownername;
 	private int pid;
 	private RegionType region;
-	private String writer;		// username of the writer of this post (not always same as owner)
+	private int writerId;		// id of writer of this post (not always same as owner)
+	private String writer;		// username of the writer of this post 
 	private String text;		// content, obviously, of the post
 
 	public enum RegionType {
@@ -14,7 +16,7 @@ public class Post implements Serializable {
 	}
 	
 	public Post(int owner, RegionType region, String writer, String text) {
-		this.owner = owner;
+		this.ownerId = owner;
 		this.region = region;
 		this.writer = writer;
 		this.text = text;
@@ -34,6 +36,14 @@ public class Post implements Serializable {
 
 	public void setRegion(RegionType region) {
 		this.region = region;
+	}
+
+	public int getWriterId() {
+		return writerId;
+	}
+
+	public void setWriterId(int writerId) {
+		this.writerId = writerId;
 	}
 
 	public String getWriter() {

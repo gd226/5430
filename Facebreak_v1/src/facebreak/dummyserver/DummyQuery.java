@@ -81,6 +81,14 @@ public class DummyQuery {
 	}
 	
 	/*
+	 * add new post; return true if newPost.getWriter() has permission to 
+	 * write on newPost.getOwner()'s board/region
+	 */
+	public static boolean newPost(Post newPost) {
+		return true;
+	}
+	
+	/*
 	 * User with uid requestingUid calls to view
 	 * the 10 most recent posts on boardOwner's board/region.
 	 * See Posting class
@@ -92,22 +100,25 @@ public class DummyQuery {
 	/*
 	 * Returns user profile for username;
 	 * Viewer has id requesterUid; ONLY return fields if requesterUid has permission
-	 * to view them. (i.e., if not in same family, don't set family/title
+	 * to view them (i.e., if not in same family, don't set family/title) by setting fields on 
+	 * profile object passed as param.
+	 * Return -1 if username does not actually exist.
 	 */
-	public static Profile getProfile(String username, int requesterUid) {
-		return null;
+	public static boolean getProfile(int requesterUid, Profile profile) {
+		if(!userExists(profile.getUsername()))
+			return false;
+		// else, set fields in Profile
+		return true;
 	}
 	
 	/*
-	 * Updates user's profile with new information (see UserProfile class)
+	 * Updates user uid's profile with new information (see UserProfile class)
 	 */
-	public static void editProfile(Profile profile) {
+	public static void editProfile(int uid, Profile profile) {
 		return;
 	}
 	
-	/*
-	 * 
-	 */
+	
 	public static void changePassword(User user) {
 		// changes user's password
 		// new password stored in User's pwd field

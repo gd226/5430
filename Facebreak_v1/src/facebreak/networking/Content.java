@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import facebreak.common.Post;
 import facebreak.common.Profile;
+import facebreak.common.Region;
 import facebreak.common.User;
 
 /*
@@ -13,7 +14,7 @@ public class Content implements Serializable {
 	private User user;
 	private Profile profile;
 	private Post post;
-	private Post[] board;
+	private Region board;
 	
 	public Content() {
 		user = null;
@@ -47,10 +48,10 @@ public class Content implements Serializable {
 	}
 
 	public Post[] getBoard() {
-		return board;
+		return board.getRecent();
 	}
 
-	public void setBoard(Post[] board) {
+	public void setBoard(Region board) {
 		this.board = board;
 	}
 }

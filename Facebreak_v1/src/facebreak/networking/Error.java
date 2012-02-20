@@ -2,7 +2,7 @@ package facebreak.networking;
 
 public enum Error {
 	SUCCESS(0, "Success!"), 
-	CONNECTION(1, "Could not connect to server."), 
+	CONNECTION(1, "Could not connect to server. Closing connection."), 
 	SERVER(2, "There was a problem on the server end. Please try again."),
 	TIMEOUT(3, "Request has timed out."),	// not sure how to implement this
 	INACTIVITY(4, "You have been logged out due to inactivity. Please log back in."), 
