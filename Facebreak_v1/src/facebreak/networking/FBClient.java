@@ -196,7 +196,7 @@ public class FBClient {
 		if(socket == null || user == null)
 			return Error.LOGIN;
 		
-		Request postRequest = new Request(user.getId());
+		Request postRequest = new Request(user.getId(), RequestType.POST);
 		talkToServer(postRequest);
 		
 		return Error.SUCCESS;

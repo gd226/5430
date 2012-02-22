@@ -2,6 +2,7 @@ package facebreak.dummyserver;
 
 import facebreak.common.Post;
 import facebreak.common.Profile;
+import facebreak.common.Title;
 import facebreak.common.User;
 import facebreak.common.Post.RegionType;
 

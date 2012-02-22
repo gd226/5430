@@ -15,6 +15,7 @@ public class Content implements Serializable {
 	private Profile profile;
 	private Post post;
 	private Region board;
+	private Post[] requestedPosts;
 	
 	public Content() {
 		user = null;
