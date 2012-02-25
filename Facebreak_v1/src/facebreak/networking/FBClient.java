@@ -214,7 +214,6 @@ public class FBClient {
 			
 			if (e == Error.SUCCESS)
 				user.setPassword(pwd);
-			System.out.println("New pwd: " + user.getPassword());
 			return e;
 		} catch (IOException e1) {
 			return Error.CONNECTION;
@@ -286,7 +285,7 @@ public class FBClient {
 	 * Post a new item on someone's region creating new Post object and setting
 	 * the necessary fields
 	 */
-	public Error post(Post newPost) {
+	public Error post(Post newPost) throws ClassNotFoundException {
 		// sanity check
 		if (socket == null || user == null)
 			return Error.LOGIN;
@@ -295,9 +294,14 @@ public class FBClient {
 		postRequest.getDetails().setPost(newPost);
 		postRequest.setTimestamp(System.currentTimeMillis());
 		
-		
-
-		return Error.SUCCESS;
+		try {
+			outStream.writeObject(postRequest);
+			Reply serverReply = (Reply)inStream.readObject();
+			
+			return serverReply.getReturnError();
+		} catch (IOException ioe) {
+			return Error.CONNECTION;
+		}
 	}
 
 	/*
