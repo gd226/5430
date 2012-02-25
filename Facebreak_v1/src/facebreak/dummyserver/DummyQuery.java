@@ -1,10 +1,10 @@
 package facebreak.dummyserver;
 
+import java.util.ArrayList;
+
 import facebreak.common.Post;
 import facebreak.common.Profile;
-import facebreak.common.Title;
 import facebreak.common.FBClientUser;
-import facebreak.common.Post.RegionType;
 
 /*
  * NOT FINALIZED YET!!
@@ -15,7 +15,8 @@ public class DummyQuery {
 	
 	private static int id_counter = 1;
 	private static Profile tmpProfile;
-
+	private static ArrayList<Post> myBoard = new ArrayList<Post>();
+	
 	// does user with id uid exist already?
 	public static boolean userExists(int uid) {
 		
@@ -88,6 +89,8 @@ public class DummyQuery {
 	 * write on newPost.getOwner()'s board/region
 	 */
 	public static boolean newPost(Post newPost) {
+		myBoard.add(newPost);
+		
 		return true;
 	}
 	
@@ -96,8 +99,9 @@ public class DummyQuery {
 	 * the 10 most recent posts on boardOwner's board/region.
 	 * See Posting class
 	 */
-	public static Post[] getBoard(String boardOwner, int requestingUid, RegionType r) {
-		return null;
+	public static ArrayList<Post> getBoard() {
+		
+		return myBoard;
 	}
 	
 	/*

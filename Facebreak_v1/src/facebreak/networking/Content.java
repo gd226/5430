@@ -47,6 +47,10 @@ public class Content implements Serializable {
 		this.post = post;
 	}
 
+	public Region getBoard() {
+		return board;
+	}
+	
 	public void setBoard(Region board) {
 		this.board = board;
 	}

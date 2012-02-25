@@ -290,6 +290,8 @@ public class FBClient {
 		if (socket == null || user == null)
 			return Error.LOGIN;
 
+		newPost.setWriterId(user.getId());
+		newPost.setWriterName(user.getUsername());
 		Request postRequest = new Request(user.getId(), RequestType.POST);
 		postRequest.getDetails().setPost(newPost);
 		postRequest.setTimestamp(System.currentTimeMillis());
@@ -307,15 +309,25 @@ public class FBClient {
 	/*
 	 * TODO: implement view board...how to do this?
 	 */
-	public Error viewBoard(Region board) {
+	public Error viewBoard(Region board) throws ClassNotFoundException {
 		// sanity check
 		if (socket == null || user == null)
 			return Error.LOGIN;
 
 		Request viewBoard = new Request(user.getId(), RequestType.VIEW_BOARD);
 		viewBoard.getDetails().setBoard(board);
+		viewBoard.setTimestamp(System.currentTimeMillis());
 
-		return Error.SUCCESS;
+		try {
+			outStream.writeObject(viewBoard);
+			Reply serverReply = (Reply)inStream.readObject();
+			Region tmp = serverReply.getContents().getBoard();
+			board.setPosts(tmp.getPosts());
+			
+			return serverReply.getReturnError();
+		} catch (IOException ioe) {
+			return Error.CONNECTION;
+		}
 	}
 
 	/*

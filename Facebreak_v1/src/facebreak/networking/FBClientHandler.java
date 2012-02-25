@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import facebreak.common.Post;
 import facebreak.common.Profile;
 import facebreak.common.FBClientUser;
+import facebreak.common.Region;
 import facebreak.dummyserver.DummyQuery;
 import facebreak.networking.Request.RequestType;
 
@@ -59,9 +61,14 @@ public class FBClientHandler extends Thread {
 			case CHANGE_PWD:
 				myReply = processChangePwd(clientUser);
 				break;
-			case VIEW_BOARD:
-				myReply = processViewBoard();
+			case VIEW_BOARD: {
+				Region region = r.getDetails().getBoard();
+				if(region == null)
+					myReply.setReturnError(Error.MALFORMED_REQUEST);
+				else
+					myReply = processViewBoard(region);
 				break;
+			}
 			case VIEW_PROFILE: {
 				Profile profile = r.getDetails().getProfile();
 				if(profile == null)
@@ -190,9 +197,17 @@ public class FBClientHandler extends Thread {
 	/*
 	 * TODO: not sure how this should be implemented
 	 */
-	public Reply processViewBoard() {
+	public Reply processViewBoard(Region region) {
 		Reply r = new Reply();
 		
+		ArrayList<Post> board = DummyQuery.getBoard();
+		
+		if(board == null)
+			r.setReturnError(Error.PRIVILEGE);
+		
+		region.setPosts(board);
+		r.getContents().setBoard(region);
+		r.setReturnError(Error.SUCCESS);
 		
 		return r;
 	}
@@ -257,21 +272,19 @@ public class FBClientHandler extends Thread {
 //			outStream.writeObject(myReply);
 			
 			while(clientSocket.isConnected() && loop) {
-//				if(inStream.available() > 0) {
-					// examine client's request
-					System.out.println("Received request, " + inStream.available() + " bytes.");
-					Request clientRequest = (Request)inStream.readObject();
-					System.out.println("Request type: " + clientRequest.getRequestType().toString());
-					
-					Reply myReply = parseRequest(clientRequest);
+				// examine client's request
+				Request clientRequest = (Request) inStream.readObject();
+				System.out.println("Request type: "
+						+ clientRequest.getRequestType().toString());
 
-					// send reply back to client
-					outStream.writeObject(myReply);
+				Reply myReply = parseRequest(clientRequest);
 
-					// exit loop on logout
-					if (clientRequest.getRequestType() == RequestType.LOGOUT)
-						loop = false;
-//				}
+				// send reply back to client
+				outStream.writeObject(myReply);
+
+				// exit loop on logout
+				if (clientRequest.getRequestType() == RequestType.LOGOUT)
+					loop = false;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
