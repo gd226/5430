@@ -1,16 +1,16 @@
 package facebreak.common;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import facebreak.common.Post.RegionType;
 
-public class Region {
+public class Region implements Serializable {
 	private int owner;
 	private String ownerName;
 	private RegionType regionType;
 	private ArrayList<Post> posts;
-	private Post[] recent;
-	private ArrayList<User> permissibleUsers;
+	private ArrayList<FBClientUser> permissibleUsers;
 	
 	public Region(int owner, RegionType regionType) {
 		this.owner = owner;
@@ -37,19 +37,11 @@ public class Region {
 	public void setPosts(ArrayList<Post> posts) {
 		this.posts = posts;
 	}
-	
-	public Post[] getRecent() {
-		return recent;
-	}
 
-	public void setRecent(Post[] recent) {
-		this.recent = recent;
-	}
-
-	public ArrayList<User> getPermissibleUsers() {
+	public ArrayList<FBClientUser> getPermissibleUsers() {
 		return permissibleUsers;
 	}
-	public void setPermissibleUsers(ArrayList<User> permissibleUsers) {
+	public void setPermissibleUsers(ArrayList<FBClientUser> permissibleUsers) {
 		this.permissibleUsers = permissibleUsers;
 	}
 }

@@ -1,6 +1,8 @@
 package facebreak.networking;
 
-public class Request {
+import java.io.Serializable;
+
+public class Request implements Serializable {
 	private int uid;
 	private long timestamp;
 	private RequestType type;
@@ -24,10 +26,6 @@ public class Request {
 	
 	public int getUserId() {
 		return uid;
-	}
-	
-	public void setUserId(int uid) {
-		this.uid = uid;
 	}
 	
 	public long getTimestamp() {

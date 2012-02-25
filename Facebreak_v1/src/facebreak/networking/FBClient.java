@@ -10,19 +10,18 @@ import java.net.UnknownHostException;
 import facebreak.common.Post;
 import facebreak.common.Profile;
 import facebreak.common.Region;
-import facebreak.common.User;
-import facebreak.common.Post.RegionType;
+import facebreak.common.FBClientUser;
 import facebreak.networking.Request.RequestType;
 
 public class FBClient {
 	private Socket socket;
 	private InetAddress serverAddr;
-	private User user;
+	private FBClientUser user;
 	private ObjectOutputStream outStream;
 	private ObjectInputStream inStream;
-	
+
 	private static final int port = 4444;
-	
+
 	public FBClient() throws UnknownHostException {
 		serverAddr = InetAddress.getLocalHost();
 		user = null;
@@ -38,27 +37,19 @@ public class FBClient {
 		outStream = null;
 		inStream = null;
 	}
-	
-	public FBClient(String username, String pwd) throws UnknownHostException {
-		serverAddr = InetAddress.getLocalHost();
-		user = new User(username, pwd);
-		socket = null;
-		outStream = null;
-		inStream = null;
-	}
-	
-	public void setCurrentUser(User user) {
+
+	public void setCurrentUser(FBClientUser user) {
 		this.user = user;
 	}
 
 	public void setCurrentUser(String username, String pwd) {
-		user = new User(username, pwd);
+		user = new FBClientUser(username, pwd);
 	}
-	
-	public User getCurrentUser() {
+
+	public FBClientUser getCurrentUser() {
 		return user;
 	}
-	
+
 	/*
 	 * Send myRequest over network; get reply back from server
 	 */
@@ -68,7 +59,7 @@ public class FBClient {
 		try {
 			// send request to server
 			outStream.writeObject(myRequest);
-		
+
 			// get reply
 			serverReply = (Reply) inStream.readObject();
 		} catch (IOException e) {
@@ -78,10 +69,10 @@ public class FBClient {
 			serverReply = new Reply();
 			serverReply.setReturnError(Error.UNKNOWN_ERROR);
 		}
-		
+
 		return serverReply;
 	}
-	
+
 	public void closeConnection() throws IOException {
 		if(inStream != null)
 			inStream.close();
@@ -89,183 +80,251 @@ public class FBClient {
 			outStream.close();
 		if(socket != null)
 			socket.close();
+		inStream = null;
+		outStream = null;
+		socket = null;
 		user = null;
+		System.out.println("Closing connection");
+	}
+
+	public Error login(String username, String pwd) throws ClassNotFoundException {
+		// cannot login while there's another user logged in
+		if(user != null)
+			return Error.MALFORMED_REQUEST;
+		
+		user = new FBClientUser(username, pwd);
+		return login();
 	}
 	
 	/*
-	 * Creates new socket and initializes input/output streams
+	 * Creates new socket and initializes input/output streams. If does not
+	 * succeed, closes connection; must create new client
 	 */
-	public Error login() throws IOException {
+	public Error login() throws ClassNotFoundException {
 		// open new connection
-		socket = new Socket(serverAddr, port);
-		outStream = new ObjectOutputStream(socket.getOutputStream());
-		inStream = new ObjectInputStream(socket.getInputStream());
-
-		// sanity check
-		if(socket == null || user == null)
-			return Error.LOGIN;
-		
-		// create request object
-		Request login = new Request(RequestType.LOGIN);
-		login.getDetails().setUser(user);
-		
-		Reply serverReply =  talkToServer(login);
-		Error e = serverReply.getReturnError();
-		
-		if(e == Error.SUCCESS) 
-			user.setId(serverReply.getContents().getUser().getId());
-		else 
-			closeConnection();
-		
-		return e;
-	}
-	
-	/*
-	 * Logout of current session
-	 */
-	public Error logout() {
-		// sanity check
-		if(socket == null || user == null)
-			return Error.LOGIN;
-		
-		Request logout = new Request(user.getId(), RequestType.LOGOUT);
-
-		Error e = talkToServer(logout).getReturnError();
-		
 		try {
-			closeConnection();
+			socket = new Socket(serverAddr, port);
+			outStream = new ObjectOutputStream(socket.getOutputStream());
+			inStream = new ObjectInputStream(socket.getInputStream());
+
+			// create request object
+			Request login = new Request(RequestType.LOGIN);
+			login.getDetails().setUser(user);
+			login.setTimestamp(System.currentTimeMillis());
+
+			outStream.writeObject(login);
+
+			Reply serverReply = (Reply) inStream.readObject();
+			Error e = serverReply.getReturnError();
+
+			if (e == Error.SUCCESS)
+				user.setId(serverReply.getContents().getUser().getId());
+			else
+				closeConnection();
+
+			return e;
 		} catch (IOException ioe) {
 			return Error.CONNECTION;
 		}
-
-		return e;
 	}
 
 	/*
-	 * Create a new user by creating a User object and setting the name and pwd fields
+	 * Logout of current session
 	 */
-	public Error createUser(User newUser) {
+	public Error logout() throws ClassNotFoundException {
 		// sanity check
 		if(socket == null || user == null)
 			return Error.LOGIN;
+
+		Request logout = new Request(user.getId(), RequestType.LOGOUT);
+		logout.setTimestamp(System.currentTimeMillis());
 		
-		Request createUser = new Request(RequestType.CREATE_USER);
-		createUser.getDetails().setUser(newUser);
-		Reply serverReply = talkToServer(createUser);
-		Error e = serverReply.getReturnError();
-		
-		if(e == Error.CONNECTION) {
-			try {
-				closeConnection();
-			} catch (IOException ioe) {
-				return e;
-			}
+		try {
+			outStream.writeObject(logout);
+			Error e = ((Reply)inStream.readObject()).getReturnError();
+			System.out.println("Logging out.");
+			closeConnection();
+			
+			return e;
+		} catch (IOException ioe) {
+			user = null;
+			socket = null;
+			return Error.CONNECTION;
 		}
-		else if(e == Error.SUCCESS) {
-			user = serverReply.getContents().getUser();
-		}
-		return e;
 	}
-	
+
+	/*
+	 * Cannot create a new user while another user is logged in on this machine.
+	 * If error occurs, automatically closes connection
+	 */
+	public Error createUser(String username, String pwd) throws ClassNotFoundException {
+
+		if(socket != null && outStream != null && inStream != null)
+			return Error.MALFORMED_REQUEST;
+
+		if(user != null)
+			return Error.LOGIN;
+		
+		user = new FBClientUser(username, pwd);
+
+		try {
+			socket = new Socket(serverAddr, port);
+			outStream = new ObjectOutputStream(socket.getOutputStream());
+			inStream = new ObjectInputStream(socket.getInputStream());
+
+			Request createUser = new Request(RequestType.CREATE_USER);
+			createUser.getDetails().setUser(user);
+			createUser.setTimestamp(System.currentTimeMillis());
+
+			outStream.writeObject(createUser);
+
+			Reply serverReply = (Reply) inStream.readObject();
+			Error e = serverReply.getReturnError();
+
+			if(e == Error.SUCCESS)
+				user = serverReply.getContents().getUser();
+			else
+				closeConnection();
+			
+			return e;
+		} catch(IOException e1) {
+			return Error.CONNECTION;
+		}
+	}
+
 	/*
 	 * Change password by providing new password string
 	 */
-	public Error changePassword(String pwd) {
+	public Error changePassword(String pwd) throws ClassNotFoundException {
 		// sanity check
-		if(socket == null || user == null)
+		if (socket == null || user == null)
 			return Error.LOGIN;
-		
-		String oldpwd = user.getPassword();
-		user.setPassword(pwd);
+
+		FBClientUser tmpUser = user;
+		tmpUser.setPassword(pwd);
 		Request changePwd = new Request(user.getId(), RequestType.CHANGE_PWD);
-		changePwd.getDetails().setUser(user);
+		changePwd.getDetails().setUser(tmpUser);
+		changePwd.setTimestamp(System.currentTimeMillis());
 		
-		Error e = talkToServer(changePwd).getReturnError();
-		if(e != Error.SUCCESS)
-			user.setPassword(oldpwd);
-		
-		return e;
-	}
-	
-	/*
-	 * Post a new item on someone's region creating new Post object and setting the 
-	 * necessary fields
-	 */
-	public Error post(int uid, Post newPost) {
-		// sanity check
-		if(socket == null || user == null)
-			return Error.LOGIN;
-		
-		Request postRequest = new Request(user.getId(), RequestType.POST);
-		talkToServer(postRequest);
-		
-		return Error.SUCCESS;
+		try {
+			outStream.writeObject(changePwd);
+			
+			Reply serverReply = (Reply)inStream.readObject();
+			Error e = serverReply.getReturnError();
+			
+			if (e == Error.SUCCESS)
+				user.setPassword(pwd);
+			System.out.println("New pwd: " + user.getPassword());
+			return e;
+		} catch (IOException e1) {
+			return Error.CONNECTION;
+		}
 	}
 
-	/*
-	 * View someone's board/region by creating new Region object and setting 
-	 * ownername and regiontype fields
-	 */
-	public Error viewBoard(int uid, Region board) {
-		// sanity check
-		if(socket == null || user == null)
-			return Error.LOGIN;
-		
-		Request viewBoard = new Request(uid, RequestType.VIEW_BOARD);
-		
-		return Error.SUCCESS;
-	}
-	
 	/*
 	 * View someone's profile. Create new Profile object and set the username of
 	 * person you want to view
 	 */
-	public Error viewProfile(Profile profile) {
+	public Error viewProfile(Profile profile) throws ClassNotFoundException {
 		// sanity check
-		if(socket == null || user == null)
+		if (socket == null || user == null)
 			return Error.LOGIN;
-		
+
 		Request viewProfile = new Request(user.getId(), RequestType.VIEW_PROFILE);
 		viewProfile.getDetails().setProfile(profile);
-		
-		Reply serverReply = talkToServer(viewProfile);
-		Error e = serverReply.getReturnError();
-		
-		if(e == Error.SUCCESS)
-			profile = serverReply.getContents().getProfile();
-		
-		return e;
+		viewProfile.setTimestamp(System.currentTimeMillis());
+
+		try {
+			outStream.writeObject(viewProfile);
+			
+			Reply serverReply = (Reply)inStream.readObject();
+			Error e = serverReply.getReturnError();
+			
+			if (e == Error.SUCCESS) {
+				Profile tmp = serverReply.getContents().getProfile();
+				profile.setFname(tmp.getFname());
+				profile.setLname(tmp.getLname());
+				profile.setFamily(tmp.getFamily());
+				profile.setTitle(tmp.getTitle());
+			}
+			
+			return e;
+		} catch (IOException e1) {
+			return Error.CONNECTION;
+		}
 	}
-	
+
 	/*
-	 * Edit your own profile by creating new Profile object and editting whatever fields
+	 * Edit your own profile by creating new Profile object and editting
+	 * whatever fields
 	 */
-	public Error editProfile(int uid, Profile myProfile) {
+	public Error editProfile(Profile myProfile) throws ClassNotFoundException {
 		// sanity check
-		if(socket == null || user == null)
+		if (socket == null || user == null)
 			return Error.LOGIN;
-		
-		Request editProfile = new Request(user.getId(), RequestType.EDIT_PROFILE);
+
+		Request editProfile = new Request(user.getId(),	RequestType.EDIT_PROFILE);
 		editProfile.getDetails().setProfile(myProfile);
+		editProfile.setTimestamp(System.currentTimeMillis());
 		
-		Reply serverReply = talkToServer(editProfile);
-		Error e = serverReply.getReturnError();
-		
-		if(e == Error.SUCCESS)
-			myProfile = serverReply.getContents().getProfile();
-		
-		return e;
+		try {
+			outStream.writeObject(editProfile);
+			
+			Reply serverReply = (Reply)inStream.readObject();
+			Error e = serverReply.getReturnError();
+			
+			if (e == Error.SUCCESS)
+				myProfile = serverReply.getContents().getProfile();
+			
+			return e;
+		} catch (IOException e1) {
+			return Error.CONNECTION;
+		}
 	}
 	
 	/*
-	 * delete a post by creating new Post object and setting ownername, pid, and region fields
-	 * Not sure how to do this one...
+	 * Post a new item on someone's region creating new Post object and setting
+	 * the necessary fields
 	 */
-	public Error delete(int uid, Post badPost) {
+	public Error post(Post newPost) {
 		// sanity check
-		if(socket == null || user == null)
+		if (socket == null || user == null)
+			return Error.LOGIN;
+
+		Request postRequest = new Request(user.getId(), RequestType.POST);
+		postRequest.getDetails().setPost(newPost);
+		postRequest.setTimestamp(System.currentTimeMillis());
+		
+		
+
+		return Error.SUCCESS;
+	}
+
+	/*
+	 * TODO: implement view board...how to do this?
+	 */
+	public Error viewBoard(Region board) {
+		// sanity check
+		if (socket == null || user == null)
+			return Error.LOGIN;
+
+		Request viewBoard = new Request(user.getId(), RequestType.VIEW_BOARD);
+		viewBoard.getDetails().setBoard(board);
+
+		return Error.SUCCESS;
+	}
+
+	/*
+	 * TODO: implement deletion
+	 */
+	public Error deletePost(int badPostId) {
+		// sanity check
+		if (socket == null || user == null)
 			return Error.LOGIN;
 		
+		Request delete = new Request(user.getId(), RequestType.DELETE_POST);
+		delete.getDetails().setPost(new Post());
+
 		return Error.SUCCESS;
 	}
 }

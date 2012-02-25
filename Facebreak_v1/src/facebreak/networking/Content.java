@@ -5,17 +5,16 @@ import java.io.Serializable;
 import facebreak.common.Post;
 import facebreak.common.Profile;
 import facebreak.common.Region;
-import facebreak.common.User;
+import facebreak.common.FBClientUser;
 
 /*
  * Wrapper class
  */
 public class Content implements Serializable {
-	private User user;
+	private FBClientUser user;
 	private Profile profile;
 	private Post post;
 	private Region board;
-	private Post[] requestedPosts;
 	
 	public Content() {
 		user = null;
@@ -24,11 +23,11 @@ public class Content implements Serializable {
 		board = null;
 	}
 
-	public User getUser() {
+	public FBClientUser getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(FBClientUser user) {
 		this.user = user;
 	}
 
@@ -46,10 +45,6 @@ public class Content implements Serializable {
 
 	public void setPost(Post post) {
 		this.post = post;
-	}
-
-	public Post[] getBoard() {
-		return board.getRecent();
 	}
 
 	public void setBoard(Region board) {

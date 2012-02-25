@@ -26,7 +26,7 @@ public class FBServer {
 		System.out.println("Listening for clients...");
 
 		// Successfully created Server Socket. Now wait for connections.
-		while (true) {
+		while(true) {
 			try {
 				Socket clientSocket = listener.accept();
 				FBClientHandler clientThread = new FBClientHandler(clientSocket);
